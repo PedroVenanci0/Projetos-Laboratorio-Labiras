@@ -1,0 +1,114 @@
+[gd_scene load_steps=16 format=3 uid="uid://v5dop6axc28e"]
+
+[ext_resource type="Script" path="res://script/player.gd" id="1_723m2"]
+[ext_resource type="Texture2D" uid="uid://ct8prvm8766ue" path="res://assents/assents_map/anime_skybox.jpg" id="1_dvsqp"]
+[ext_resource type="Script" path="res://script/camera_pivot.gd" id="1_pd7kl"]
+[ext_resource type="PackedScene" uid="uid://kod0awm1ha4o" path="res://assents/entidades/models/gobot/model/gobot.glb" id="3_8nkkb"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_5dipn"]
+panorama = ExtResource("1_dvsqp")
+
+[sub_resource type="Sky" id="Sky_u7x1n"]
+sky_material = SubResource("PanoramaSkyMaterial_5dipn")
+
+[sub_resource type="Environment" id="Environment_3oxij"]
+background_mode = 2
+background_color = Color(0.211814, 0.505923, 0.344209, 1)
+sky = SubResource("Sky_u7x1n")
+ssr_enabled = true
+ssil_enabled = true
+sdfgi_enabled = true
+volumetric_fog_albedo = Color(0, 0, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2qxes"]
+size = Vector2(20, 20)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_o2cyw"]
+data = PackedVector3Array(10, 0, 10, -10, 0, 10, 10, 0, -10, -10, 0, 10, -10, 0, -10, 10, 0, -10)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_cds54"]
+radius = 0.341294
+height = 1.29522
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_14cwo"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_biv65"]
+material = SubResource("StandardMaterial3D_14cwo")
+size = Vector3(0.5, 3, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_d1nun"]
+size = Vector3(0.5, 3.02747, 5)
+
+[sub_resource type="SphereMesh" id="SphereMesh_uhkm8"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_mcdfr"]
+
+[node name="WORLD" type="Node3D"]
+
+[node name="camera_pivot" type="Node3D" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("1_pd7kl")
+target = NodePath("../player")
+
+[node name="Camera" type="Camera3D" parent="camera_pivot"]
+current = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_3oxij")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.993643, -0.0996821, -0.052321, 0.112579, 0.879813, 0.461795, 0, -0.464749, 0.885442, 0, 3.66893, 5.51996)
+light_energy = 1.808
+shadow_enabled = true
+shadow_bias = 2.291
+shadow_blur = 0.905
+
+[node name="floor" type="MeshInstance3D" parent="."]
+mesh = SubResource("PlaneMesh_2qxes")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="floor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="floor/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_o2cyw")
+
+[node name="player" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.56952, 2.55799, 0)
+script = ExtResource("1_723m2")
+
+[node name="gobot" parent="player" instance=ExtResource("3_8nkkb")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.583083, 0)
+shape = SubResource("CapsuleShape3D_cds54")
+
+[node name="wall" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.28856, 0, 0)
+metadata/_edit_group_ = true
+
+[node name="wall" type="MeshInstance3D" parent="wall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.46728, 0)
+mesh = SubResource("BoxMesh_biv65")
+skeleton = NodePath("../../floor")
+
+[node name="Collision" type="CollisionShape3D" parent="wall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.467, 0)
+shape = SubResource("BoxShape3D_d1nun")
+
+[node name="ball" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.66573, 3.34843, 0.0642748)
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ball"]
+mesh = SubResource("SphereMesh_uhkm8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ball"]
+shape = SubResource("SphereShape3D_mcdfr")
+
+[node name="ball2" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.57626, 2.13635, 0)
+metadata/_edit_group_ = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ball2"]
+mesh = SubResource("SphereMesh_uhkm8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ball2"]
+shape = SubResource("SphereShape3D_mcdfr")
